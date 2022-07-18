@@ -3,6 +3,7 @@ using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
 using WebServerImages.Models.Images;
 using System.Linq;
+using WebServerImages.Data;
 
 namespace WebServerImages.Services;
 
@@ -10,6 +11,10 @@ public class ImageService : IImageService
 {
     private const int ThumbnailWidth = 600; // 300
     private const int FullScreenWidth = 1000;
+
+    private readonly IServiceScopeFactory serviceScopeFactory;
+
+    public ImageService(IServiceScopeFactory serviceScopeFactory) => this.serviceScopeFactory = serviceScopeFactory;
 
     public async Task Process(IEnumerable<ImageInputModel> images)
     {
@@ -19,20 +24,20 @@ public class ImageService : IImageService
             {
                 using var imageResult = await Image.LoadAsync(image.Content);
 
-                await this.SaveImage(imageResult, $"Original_{image.Name}", imageResult.Width);
-                await this.SaveImage(imageResult, $"FullScreen_{image.Name}", FullScreenWidth);
-                await this.SaveImage(imageResult, $"Thumbnail_{image.Name}", ThumbnailWidth);
+                var original = await this.SaveImage(imageResult, imageResult.Width);
+                var fullscreen = await this.SaveImage(imageResult, FullScreenWidth);
+                var thumbnail = await this.SaveImage(imageResult, ThumbnailWidth);
             }
             catch
             {
-                // Log Information.
-            }
+            // Log Information.
+        }
         }))).ToList();
 
         await Task.WhenAll(tasks);
     }
 
-    private async Task SaveImage(Image image, string name, int resizeWidth)
+    private async Task<byte[]> SaveImage(Image image, int resizeWidth)
     {
         var width = image.Width;
         var height = image.Height;
@@ -47,12 +52,13 @@ public class ImageService : IImageService
 
         image.Metadata.ExifProfile = null;
 
-        //await using var memoryStream = new MemoryStream();
-        //await imageResult.SaveAsJpeg(memoryStream, new JpegEncoder);
+        await using var memoryStream = new MemoryStream();
 
-        await image.SaveAsJpegAsync(name, new JpegEncoder
+        await image.SaveAsJpegAsync(memoryStream, new JpegEncoder
         {
             Quality = 75
         });
+
+        return memoryStream.ToArray();
     }
 }
