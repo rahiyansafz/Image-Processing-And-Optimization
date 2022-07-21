@@ -4,5 +4,8 @@ namespace WebServerImages.Services;
 
 public interface IImageService
 {
-    public Task Process(IEnumerable<ImageInputModel> images);
+    Task Process(IEnumerable<ImageInputModel> images);
+    Task<Stream> GetThumbnail(string id);
+    Task<Stream> GetFullScreen(string id);
+    Task<List<string>> GetAllImages();
 }
