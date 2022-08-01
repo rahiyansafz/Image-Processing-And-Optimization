@@ -2,7 +2,6 @@
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
 using WebServerImages.Models.Images;
-using System.Linq;
 using WebServerImages.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;

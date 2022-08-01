@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebServerImages.Data;
 using WebServerImages.Services;
+using Microsoft.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddTransient<IImageService, ImageService>();
+builder.Services.AddTransient<IFileImageService, FileImageService>();
 
 var app = builder.Build();
 
@@ -26,7 +28,22 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = options =>
+    {
+
+        var headers = options.Context.Response.GetTypedHeaders();
+
+        headers.CacheControl = new CacheControlHeaderValue
+        {
+            Public = true,
+            MaxAge = TimeSpan.FromDays(30)
+        };
+
+        headers.Expires = new DateTimeOffset(DateTime.UtcNow.AddDays(30));
+    }
+});
 
 app.UseRouting();
 

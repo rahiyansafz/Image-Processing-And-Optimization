@@ -10,4 +10,5 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<ImageData> ImageData { get; set; }
+    public DbSet<ImageFile> ImageFiles { get; set; }
 }
