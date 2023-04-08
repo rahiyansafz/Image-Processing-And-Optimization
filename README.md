@@ -1,0 +1,3 @@
+# Image-Processing-And-Optimization
+
+This portfolio project involved developing an Image Processing & Optimization system, which allowed for efficient handling and storage of images. The system included features such as restricting request size, image processing using streams and sharpness, asynchronous processing, and storing images in a database using queries and streams. Additionally, the system enabled retrieval of multiple image results with headers and base64, and provided options for storing images externally in the cloud. Through this project, I gained experience in developing systems for managing and processing large volumes of images, while implementing best practices for efficient and optimized storage and retrieval.
